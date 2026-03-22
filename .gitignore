@@ -1,8 +1,9 @@
 saved_models/ 
-data/raw/ 
-data/uploads/ 
-data/results/ 
-__pycache__/ 
-*.pth 
+data/ 
 "Dataset FER -2013/" 
 Audio_Song_Actors_01-24/ 
+__pycache__/ 
+*.pth 
+venv/ 
+*.mp4 
+*.wav 
