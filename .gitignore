@@ -1,0 +1,8 @@
+saved_models/ 
+data/raw/ 
+data/uploads/ 
+data/results/ 
+__pycache__/ 
+*.pth 
+"Dataset FER -2013/" 
+Audio_Song_Actors_01-24/ 
