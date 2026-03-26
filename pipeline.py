@@ -59,16 +59,7 @@ class InterviewAnalysisPipeline:
     # ── Main Entry Point ──────────────────────────────────────────────────────
 
     def analyze(self, video_path: str, save_report: bool = False) -> Dict:
-        """
-        Full analysis of an interview video.
-
-        Args:
-            video_path:   Path to .mp4 / .avi / .mov interview video
-            save_report:  If True, save JSON report alongside the video
-
-        Returns:
-            Complete analysis dictionary
-        """
+     
         logger.info(f"▶ Starting analysis: {video_path}")
 
         # ── Step 1: Video Processing ──────────────────────────────────────
