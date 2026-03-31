@@ -45,6 +45,7 @@ class InterviewAnalysisPipeline:
         logger.info("Pipeline ready.")
 
     def analyze(self, video_path: str, save_report: bool = False) -> Dict:
+     
         logger.info(f"▶ Starting analysis: {video_path}")
 
         # Step 1: Video Processing
