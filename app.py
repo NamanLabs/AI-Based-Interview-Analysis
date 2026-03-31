@@ -1,14 +1,3 @@
-# app.py
-"""
-Flask REST API for the Interview Analysis System.
-
-Endpoints:
-  POST /analyze        — Upload video, get full analysis
-  POST /analyze/text   — Analyze transcript only
-  GET  /health         — Health check
-  GET  /results/<id>   — Retrieve cached result
-"""
-
 import os
 import uuid
 import json
@@ -18,7 +7,6 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from loguru import logger
 
-# Import pipeline (lazy load to not block app startup)
 pipeline_instance = None
 
 def get_pipeline():
@@ -32,8 +20,7 @@ def get_pipeline():
 app = Flask(__name__)
 CORS(app)
 
-# ── Config ────────────────────────────────────────────────────────────────────
-app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024   # 500 MB max upload
+app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024   
 UPLOAD_FOLDER  = Path("data/uploads")
 RESULTS_FOLDER = Path("data/results")
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
@@ -45,8 +32,6 @@ ALLOWED_EXTENSIONS = {"mp4", "avi", "mov", "mkv", "webm"}
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-# ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route("/")
 def index():
@@ -84,14 +69,12 @@ def analyze_video():
         pipe   = get_pipeline()
         result = pipe.analyze(str(save_path), save_report=False)
 
-        # Cache result
+        
         result_path = RESULTS_FOLDER / f"{job_id}.json"
         with open(result_path, "w") as f:
             json.dump(result, f, indent=2)
 
-        # Clean up upload (optional)
-        # save_path.unlink()
-
+        
         return jsonify({
             "job_id":       job_id,
             "status":       "success",
@@ -143,6 +126,5 @@ def too_large(e):
     return jsonify({"error": "File too large. Max size: 500MB"}), 413
 
 
-# ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

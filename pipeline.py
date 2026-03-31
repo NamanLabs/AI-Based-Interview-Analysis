@@ -1,15 +1,3 @@
-# pipeline.py
-"""
-Main Interview Analysis Pipeline.
-
-Usage:
-    from pipeline import InterviewAnalysisPipeline
-    
-    pipeline = InterviewAnalysisPipeline()
-    results  = pipeline.analyze("path/to/interview.mp4")
-    print(results)
-"""
-
 import os
 import json
 import tempfile
@@ -44,7 +32,7 @@ class InterviewAnalysisPipeline:
     ):
         logger.info("Initializing Interview Analysis Pipeline...")
 
-        # Auto-detect saved weights
+        
         facial_weights = facial_weights or str(MODELS_DIR / "facial_emotion_best.pth")
         speech_weights = speech_weights or str(MODELS_DIR / "speech_emotion_best.pth")
         nlp_weights    = nlp_weights    or str(MODELS_DIR / "nlp_sentiment_best.pth")
@@ -56,13 +44,11 @@ class InterviewAnalysisPipeline:
 
         logger.info("Pipeline ready.")
 
-    # ── Main Entry Point ──────────────────────────────────────────────────────
-
     def analyze(self, video_path: str, save_report: bool = False) -> Dict:
      
         logger.info(f"▶ Starting analysis: {video_path}")
 
-        # ── Step 1: Video Processing ──────────────────────────────────────
+        # Step 1: Video Processing
         logger.info("Step 1/5: Processing video...")
         video_proc = VideoProcessor(video_path)
         face_sequence = video_proc.get_face_sequence()   # [(ts, face_crop), ...]
@@ -70,7 +56,7 @@ class InterviewAnalysisPipeline:
         if not face_sequence:
             return {"error": "No faces detected in video. Please ensure the candidate is visible."}
 
-        # ── Step 2: Audio Extraction ──────────────────────────────────────
+        # Step 2: Audio Extraction
         logger.info("Step 2/5: Extracting audio...")
         with tempfile.TemporaryDirectory() as tmpdir:
             audio_path = os.path.join(tmpdir, "audio.wav")
@@ -82,12 +68,12 @@ class InterviewAnalysisPipeline:
                 logger.warning(f"Audio extraction failed: {e}. Skipping audio analysis.")
                 audio_available = False
 
-            # ── Step 3: Facial Analysis ───────────────────────────────────
+            # Step 3: Facial Analysis
             logger.info("Step 3/5: Running facial emotion analysis...")
             face_crops = [crop for _, crop in face_sequence]
             facial_result = self.facial_analyzer.analyze_sequence(face_crops)
 
-            # ── Step 4: Speech + NLP Analysis ────────────────────────────
+            # Step 4: Speech + NLP Analysis
             if audio_available:
                 logger.info("Step 4/5: Running speech emotion analysis...")
                 speech_result = self.speech_analyzer.analyze(audio_proc)
@@ -102,13 +88,13 @@ class InterviewAnalysisPipeline:
                 nlp_result    = self._empty_nlp_result()
                 transcript    = ""
 
-            # ── Step 5: Fusion & Scoring ──────────────────────────────────
+            # Step 5: Fusion & Scoring 
             logger.info("Step 5/5: Computing final scores...")
             final_scores = self.scorer.compute_scores(
                 facial_result, speech_result, nlp_result
             )
 
-        # ── Compile Full Report ───────────────────────────────────────────
+        # Compile Full Report
         report = {
             "video_path":        video_path,
             "duration_seconds":  video_proc.duration,
@@ -130,20 +116,14 @@ class InterviewAnalysisPipeline:
         logger.info(f"✓ Analysis complete. Overall score: {final_scores['overall_suitability']}/100")
         return report
 
-    # ── Text-Only Mode (no video) ─────────────────────────────────────────────
+    # Text-Only Mode (no video)
 
     def analyze_transcript(self, transcript: str) -> Dict:
-        """
-        Analyze a plain-text transcript (no video required).
-        Returns NLP scores only.
-        """
         nlp_result  = self.nlp_analyzer.analyze(transcript)
         empty_face  = self._empty_facial_result()
         empty_speech = self._empty_speech_result()
         scores = self.scorer.compute_scores(empty_face, empty_speech, nlp_result)
         return {"nlp_analysis": nlp_result, "scores": scores}
-
-    # ── Fallback empty results ────────────────────────────────────────────────
 
     @staticmethod
     def _empty_facial_result() -> Dict:
@@ -176,7 +156,6 @@ class InterviewAnalysisPipeline:
         }
 
 
-# ── CLI Entry Point ───────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import argparse
