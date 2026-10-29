@@ -1,7 +1,6 @@
 # 🎙️ Multimodal Deep Learning Framework for AI-Based Interview Analysis
 
-**Naman Kumar | Reg: 23FE10CAI00331 | MUJ Deep Learning Lab (AIM3230)**  
-Guided by Dr. Pankaj Upadhyay
+**Naman Kumar **  
 
 ---
 
